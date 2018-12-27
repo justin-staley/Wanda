@@ -1,8 +1,6 @@
 /*
-
 Wanda, a PHASE3 Mission. Maintained by Geoffrey Momin
 Copyright 2018
-
 */
 
 // Import all required modules
@@ -14,53 +12,49 @@ const workerRole = require('./get_workerRole.js');
 const functions = require('firebase-functions');
 const {WebhookClient} = require('dialogflow-fulfillment');
 const {Card, Suggestion} = require('dialogflow-fulfillment');
- 
+
 process.env.DEBUG = 'dialogflow:debug'
 
 exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, response) => {
-  const agent = new WebhookClient({ request, response });
-  console.log('Dialogflow Request headers: ' + JSON.stringify(request.headers));
-  console.log('Dialogflow Request body: ' + JSON.stringify(request.body));
+    const agent = new WebhookClient({ request, response });
+    console.log('Dialogflow Request headers: ' + JSON.stringify(request.headers));
+    console.log('Dialogflow Request body: ' + JSON.stringify(request.body));
 
- function welcome(agent) {
-    agent.add(`Welcome to my agent!`);
-  }
- 
-  function fallback(agent) {
-    agent.add(`I didn't understand`);
-    agent.add(`I'm sorry, can you try again?`);
-  }
+    function welcome(agent) {
+        agent.add(`Welcome to my agent!`);
+    }
 
-  function get_workerRole(agent) {
-      let role_FirstName = agent.parameters.givenName;
-      let role_LastName = agent.parameters.lastName;
-      if (role_FirstName == 'Logan' && role_LastName == 'McNeil'){
-          agent.add(`${role_FirstName} is the HR Administrator.`);
-      }
-  }
- 
-  async function workRole(agent) {
-    let findFirstName = 'Logan';
-    let findLastName = 'McNeil';
-    let locateName = findFirstName + '&' + findLastName;
+    function fallback(agent) {
+        agent.add(`I didn't understand`);
+        agent.add(`I'm sorry, can you try again?`);
+    }
 
-    const accesstoken = await token();
-    console.log(accesstoken);
-    //const role = await workerRole(locateName, accesstoken);
-    //agent.add(`${locateName} is the ${role}.`);
-  }
+    function get_workerRole(agent) {
+        let role_FirstName = agent.parameters.givenName;
+        let role_LastName = agent.parameters.lastName;
+    }
 
-                                                                  
-  // Run the proper function handler based on the matched Dialogflow intent name
-  let intentMap = new Map();
-  intentMap.set('Default Welcome Intent', welcome);
-  intentMap.set('Default Fallback Intent', fallback);
-  intentMap.set('get_workerRole', get_workerRole);
-  // intentMap.set('your intent name here', yourFunctionHandler);
-  // intentMap.set('your intent name here', googleAssistantHandler);
-  agent.handleRequest(intentMap);
- 
-});                                                               
+    async function workRole(agent) {
+        let findFirstName = agent.parameters.givenName;
+        let findLastName = agent.parameters.lastName;
+        let locateName = findFirstName + '&' + findLastName;
+
+        const accesstoken = await token();
+        console.log(accesstoken);
+        const role = await workerRole(locateName, accesstoken);
+        agent.add(`${locateName} is the ${role}.`);
+    }
+
+    // Run the proper function handler based on the matched Dialogflow intent name
+    let intentMap = new Map();
+    intentMap.set('Default Welcome Intent', welcome);
+    intentMap.set('Default Fallback Intent', fallback);
+    intentMap.set('get_workerRole', get_workerRole);
+    // intentMap.set('your intent name here', yourFunctionHandler);
+    // intentMap.set('your intent name here', googleAssistantHandler);
+    agent.handleRequest(intentMap);
+
+});
 
 
 
@@ -70,27 +64,26 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 // See https://github.com/dialogflow/dialogflow-fulfillment-nodejs
 // for Dialogflow fulfillment library docs, samples, and to report issues
 'use strict';
- 
+
 const functions = require('firebase-functions');
 const {WebhookClient} = require('dialogflow-fulfillment');
 const {Card, Suggestion} = require('dialogflow-fulfillment');
- 
+
 process.env.DEBUG = 'dialogflow:debug'; // enables lib debugging statements
- 
+
 exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, response) => {
   const agent = new WebhookClient({ request, response });
   console.log('Dialogflow Request headers: ' + JSON.stringify(request.headers));
   console.log('Dialogflow Request body: ' + JSON.stringify(request.body));
- 
+
   function welcome(agent) {
     agent.add(`Welcome to my agent!`);
   }
- 
+
   function fallback(agent) {
     agent.add(`I didn't understand`);
     agent.add(`I'm sorry, can you try again?`);
 }
-
   function get_workerRole(agent) {
       let role_FirstName = agent.parameters.givenName;
       let role_LastName = agent.parameters.lastName;
@@ -98,7 +91,6 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
           agent.add(`${role_FirstName} is the HR Administrator.`);
       }
   }
-
   // // Uncomment and edit to make your own intent handler
   // // uncomment `intentMap.set('your intent name here', yourFunctionHandler);`
   // // below to get this function to be run when a Dialogflow intent is matched
@@ -116,7 +108,6 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
   //   agent.add(new Suggestion(`Suggestion`));
   //   agent.setContext({ name: 'weather', lifespan: 2, parameters: { city: 'Rome' }});
   // }
-
   // // Uncomment and edit to make your own Google Assistant intent handler
   // // uncomment `intentMap.set('your intent name here', googleAssistantHandler);`
   // // below to get this function to be run when a Dialogflow intent is matched
@@ -127,7 +118,6 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
   // }
   // // See https://github.com/dialogflow/dialogflow-fulfillment-nodejs/tree/master/samples/actions-on-google
   // // for a complete Dialogflow fulfillment library Actions on Google client library v2 integration sample
-
   // Run the proper function handler based on the matched Dialogflow intent name
   let intentMap = new Map();
   intentMap.set('Default Welcome Intent', welcome);
