@@ -1,3 +1,70 @@
+/*
+
+Wanda, a PHASE3 Mission. Maintained by Geoffrey Momin
+Copyright 2018
+
+*/
+
+// Import all required modules
+'use strict';
+
+const token = require('./get_token.js');
+const workerRole = require('./get_workerRole.js');
+
+const functions = require('firebase-functions');
+const {WebhookClient} = require('dialogflow-fulfillment');
+const {Card, Suggestion} = require('dialogflow-fulfillment');
+ 
+process.env.DEBUG = 'dialogflow:debug'
+
+exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, response) => {
+  const agent = new WebhookClient({ request, response });
+  console.log('Dialogflow Request headers: ' + JSON.stringify(request.headers));
+  console.log('Dialogflow Request body: ' + JSON.stringify(request.body));
+
+ function welcome(agent) {
+    agent.add(`Welcome to my agent!`);
+  }
+ 
+  function fallback(agent) {
+    agent.add(`I didn't understand`);
+    agent.add(`I'm sorry, can you try again?`);
+  }
+
+  function get_workerRole(agent) {
+      let role_FirstName = agent.parameters.givenName;
+      let role_LastName = agent.parameters.lastName;
+      if (role_FirstName == 'Logan' && role_LastName == 'McNeil'){
+          agent.add(`${role_FirstName} is the HR Administrator.`);
+      }
+  }
+ 
+  async function workRole(agent) {
+    let findFirstName = 'Logan';
+    let findLastName = 'McNeil';
+    let locateName = findFirstName + '&' + findLastName;
+
+    const accesstoken = await token();
+    console.log(accesstoken);
+    //const role = await workerRole(locateName, accesstoken);
+    //agent.add(`${locateName} is the ${role}.`);
+  }
+
+                                                                  
+  // Run the proper function handler based on the matched Dialogflow intent name
+  let intentMap = new Map();
+  intentMap.set('Default Welcome Intent', welcome);
+  intentMap.set('Default Fallback Intent', fallback);
+  intentMap.set('get_workerRole', get_workerRole);
+  // intentMap.set('your intent name here', yourFunctionHandler);
+  // intentMap.set('your intent name here', googleAssistantHandler);
+  agent.handleRequest(intentMap);
+ 
+});                                                               
+
+
+
+/*
 // Wanda, a PHASE3 Mission. Maintained by Geoffrey Momin
 // Copyright 2018
 // See https://github.com/dialogflow/dialogflow-fulfillment-nodejs
@@ -70,3 +137,4 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
   // intentMap.set('your intent name here', googleAssistantHandler);
   agent.handleRequest(intentMap);
 });
+*/
